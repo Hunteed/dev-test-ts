@@ -31,39 +31,46 @@
 
 // Referral interface
 
-type ReferralStatus = 'submitted' | 'interview' | 'declined' | 'hired'
+type ReferralStatus = "submitted" | "interview" | "declined" | "hired";
 
 interface Referral {
   // id of the referral
-  _id: string
+  _id: string;
 
   hunter: {
     // id of the hunter that referred this applicant
-    _id: string
-  }
+    _id: string;
+  };
 
   // current status of this referral
-  status: ReferralStatus
+  status: ReferralStatus;
 }
 
 // Job interface
 interface Job {
   // id of the job
-  _id: string
+  _id: string;
 
   // the amount the hunter will earn, in case his/her referral goes to 'hired'
   reward: {
-    hunterGets: number
-  }
+    hunterGets: number;
+  };
 
   // async method that returns all the referrals associated with this job
-  getReferrals: () => Promise<Referral[]>
+  getReferrals: () => Promise<Referral[]>;
 }
 
 class HunteedTest {
-
   public async potentialGain(hunterId: string, jobs: Job[]): Promise<number> {
-    // Code goes here
+    let hunterRewards = 0;
+    for (const job of jobs) {
+      const referrals = await job.getReferrals()
+      for (const referral of referrals) {
+        if (referral._id === hunterId && referral.status === "hired") {
+          hunterRewards += job.reward.hunterGets
+        }
+      }
+    }
+    return hunterRewards;
   }
-
 }
